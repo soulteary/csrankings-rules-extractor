@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/soulteary/csrankings-rules-extractor/internal/define"
 	"github.com/soulteary/csrankings-rules-extractor/internal/extractor"
@@ -24,31 +23,41 @@ func main() {
 		FetchFiles()
 	}
 
-	// fmt.Println("Start parsing filter.xq")
-	// inproceedings, articles, err := extractor.GetFilters("data/emeryberger/CSrankings/filter.xq")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("inproceedings:", len(inproceedings))
-	// fmt.Println("articles:", len(articles))
-
-	// tsConfig, err := extractor.GetCSRankingsTS("node-src/dist.js")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(tsConfig)
-
-	buf, err := os.ReadFile("data/emeryberger/CSrankings/util/csrankings.py")
+	fmt.Println("Start parsing filter.xq")
+	inproceedings, articles, err := extractor.GetFilters("data/emeryberger/CSrankings/filter.xq")
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("inproceedings:", len(inproceedings))
+	fmt.Println("articles:", len(articles))
+	fmt.Println()
+	fmt.Println()
 
+	fmt.Println("Start parsing csrankings.ts")
+	tsConfig, err := extractor.GetCSRankingsTS("node-src/dist.js")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(tsConfig)
+	fmt.Println()
+	fmt.Println()
+
+	fmt.Println("Start parsing csrankings.py")
 	// docker run --rm -it -p 8181:8081 soulteary/go-python-ast:alpine
-	// trick: Comment out the code that is irrelevant to the parsing configuration to avoid errors in AST parsing (lower versions of Python)
-	code := strings.ReplaceAll(string(buf), `if (pvmatcher := TECSCounterColon.match(pages)):`, "#")
-	python, err := extractor.GetPythonAST("localhost:8181", code)
+	csrankingsPy, err := os.ReadFile("data/emeryberger/CSrankings/util/csrankings.py")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(python)
+	jsConverter, err := os.ReadFile("internal/extractor/csrankings-py.js")
+	if err != nil {
+		panic(err)
+	}
+	GetPyConfig, err := extractor.GetPyConfig("localhost:8181", csrankingsPy, jsConverter)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(GetPyConfig)
+	fmt.Println()
+	fmt.Println()
+
 }
