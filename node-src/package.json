@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "soulteary",
   "scripts":{
-    "build": "esbuild --bundle lib.js --outfile=dist.js --minify",
+    "build": "esbuild --bundle lib.js --format=iife --global-name=GetCSRankingsConfig --platform=node --outfile=dist.js --minify",
     "start": "node dist/index.js"
   },
   "dependencies": {
