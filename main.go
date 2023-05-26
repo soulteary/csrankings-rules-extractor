@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/soulteary/csrankings-rules-extractor/internal/define"
 	"github.com/soulteary/csrankings-rules-extractor/internal/extractor"
@@ -22,17 +24,31 @@ func main() {
 		FetchFiles()
 	}
 
-	fmt.Println("Start parsing filter.xq")
-	inproceedings, articles, err := extractor.GetFilters("data/emeryberger/CSrankings/filter.xq")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("inproceedings:", len(inproceedings))
-	fmt.Println("articles:", len(articles))
+	// fmt.Println("Start parsing filter.xq")
+	// inproceedings, articles, err := extractor.GetFilters("data/emeryberger/CSrankings/filter.xq")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("inproceedings:", len(inproceedings))
+	// fmt.Println("articles:", len(articles))
 
-	tsConfig, err := extractor.GetCSRankingsTS("node-src/dist.js")
+	// tsConfig, err := extractor.GetCSRankingsTS("node-src/dist.js")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(tsConfig)
+
+	buf, err := os.ReadFile("data/emeryberger/CSrankings/util/csrankings.py")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(tsConfig)
+
+	// docker run --rm -it -p 8181:8081 soulteary/go-python-ast:alpine
+	// trick: Comment out the code that is irrelevant to the parsing configuration to avoid errors in AST parsing (lower versions of Python)
+	code := strings.ReplaceAll(string(buf), `if (pvmatcher := TECSCounterColon.match(pages)):`, "#")
+	python, err := extractor.GetPythonAST("localhost:8181", code)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(python)
 }
