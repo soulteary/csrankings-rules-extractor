@@ -87,26 +87,63 @@ function GetDictTupleArray(key) {
   }, {});
 }
 
+function ConvertToArray(data) {
+  return Object.keys(data).map(function (key) {
+    return { key: Number(key), value: data[key] };
+  });
+}
+
+function FixISMB(datasets) {
+  return datasets.map((item) => {
+    item.value = item.value.map((value) => {
+      if (typeof value == "string") {
+        let v = value.toLowerCase();
+        if (v == "supplement") {
+          value = -1;
+        } else if (v == "supplement-1") {
+          value = -2;
+        } else {
+          throw new Error("ISMB_Bioinformatics value error");
+        }
+      }
+      return value;
+    });
+    return item;
+  });
+}
+
+function FixTECS(datasets) {
+  return datasets.map((item) => {
+    item.value = item.value.map((value) => {
+      if (typeof value == "string" && value == "5s") {
+        value = 5;
+      }
+      return value;
+    });
+    return item;
+  });
+}
+
 JSON.stringify({
   pageCountThreshold: GetInt("pageCountThreshold"),
   pageCounterNormal: GetRegexp("pageCounterNormal"),
   pageCounterColon: GetRegexp("pageCounterColon"),
   TECSCounterColon: GetRegexp("TECSCounterColon"),
   ISMBpageCounter: GetRegexp("ISMBpageCounter"),
-  EMSOFT_TECS: GetDictTuple("EMSOFT_TECS"),
-  EMSOFT_TECS_PaperNumbers: GetDictTuple("EMSOFT_TECS_PaperNumbers"),
-  EMSOFT_TCAD: GetDictTuple("EMSOFT_TCAD"),
-  EMSOFT_TCAD_PaperStart: GetDictArray("EMSOFT_TCAD_PaperStart"),
-  DAC_TooShortPapers: GetDictArray("DAC_TooShortPapers"),
-  ISMB_Bioinformatics: GetDictTuple("ISMB_Bioinformatics"),
-  TOG_SIGGRAPH_Volume: GetDictTuple("TOG_SIGGRAPH_Volume"),
-  TOG_SIGGRAPH_Asia_Volume: GetDictTuple("TOG_SIGGRAPH_Asia_Volume"),
-  CGF_EUROGRAPHICS_Volume: GetDictTuple("CGF_EUROGRAPHICS_Volume"),
-  TVCG_Vis_Volume: GetDictTuple("TVCG_Vis_Volume"),
-  TVCG_VR_Volume: GetDictTuple("TVCG_VR_Volume"),
-  ICSE_ShortPaperStart: GetObjectArray("ICSE_ShortPaperStart"),
-  SIGMOD_NonResearchPaperStart: GetObjectArray("SIGMOD_NonResearchPaperStart"),
-  SIGMOD_NonResearchPapersRange: GetDictTupleArray("SIGMOD_NonResearchPapersRange"),
+  EMSOFT_TECS: FixTECS(ConvertToArray(GetDictTuple("EMSOFT_TECS"))),
+  EMSOFT_TECS_PaperNumbers: ConvertToArray(GetDictTuple("EMSOFT_TECS_PaperNumbers")),
+  EMSOFT_TCAD: ConvertToArray(GetDictTuple("EMSOFT_TCAD")),
+  EMSOFT_TCAD_PaperStart: ConvertToArray(GetDictArray("EMSOFT_TCAD_PaperStart")),
+  DAC_TooShortPapers: ConvertToArray(GetDictArray("DAC_TooShortPapers")),
+  ISMB_Bioinformatics: FixISMB(ConvertToArray(GetDictTuple("ISMB_Bioinformatics"))),
+  TOG_SIGGRAPH_Volume: ConvertToArray(GetDictTuple("TOG_SIGGRAPH_Volume")),
+  TOG_SIGGRAPH_Asia_Volume: ConvertToArray(GetDictTuple("TOG_SIGGRAPH_Asia_Volume")),
+  CGF_EUROGRAPHICS_Volume: ConvertToArray(GetDictTuple("CGF_EUROGRAPHICS_Volume")),
+  TVCG_Vis_Volume: ConvertToArray(GetDictTuple("TVCG_Vis_Volume")),
+  TVCG_VR_Volume: ConvertToArray(GetDictTuple("TVCG_VR_Volume")),
+  ICSE_ShortPaperStart: ConvertToArray(GetObjectArray("ICSE_ShortPaperStart")),
+  SIGMOD_NonResearchPaperStart: ConvertToArray(GetObjectArray("SIGMOD_NonResearchPaperStart")),
+  SIGMOD_NonResearchPapersRange: ConvertToArray(GetDictTupleArray("SIGMOD_NonResearchPapersRange")),
   ASE_LongPaperThreshold: GetInt("ASE_LongPaperThreshold"),
   startyear: GetInt("startyear"),
   endyear: GetInt("endyear"),
