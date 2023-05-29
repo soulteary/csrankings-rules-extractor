@@ -2,6 +2,8 @@
 
 Strip and extract configuration data from CSRankings project [sourcecode](./data/emeryberger/CSrankings/).
 
+- Code updated to [e3925f5](https://github.com/emeryberger/CSrankings/commit/e3925f52d40027925ade98d41e8085ee6240e0b8)
+
 ## Usage
 
 Use the following simple command:
